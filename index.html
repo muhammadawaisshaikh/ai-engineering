@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Engineering Recipes - Comprehensive Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.3s ease-out'
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .tag-chip {
+            transition: all 0.2s ease-in-out;
+        }
+        .tag-chip:hover {
+            transform: scale(1.05);
+        }
+        .tag-chip.active {
+            background-color: rgb(59, 130, 246);
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-6">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            AI Engineering Recipes
+                        </h1>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Comprehensive Guide to AI & Machine Learning</p>
+                    </div>
+                </div>
+                
+                <!-- Dark Mode Toggle -->
+                <button id="darkModeToggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                    <svg id="sunIcon" class="w-5 h-5 text-yellow-500 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                    <svg id="moonIcon" class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Search and Filters -->
+        <div class="mb-8 space-y-4">
+            <!-- Search Bar -->
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <input type="text" id="searchInput" placeholder="Search recipes by title, description, or tags..." 
+                       class="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+
+            <!-- Tag Filters -->
+            <div class="flex flex-wrap gap-2" id="tagFilters">
+                <!-- Tags will be populated dynamically -->
+            </div>
+        </div>
+
+        <!-- Recipe Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="recipeGrid">
+            <!-- Recipes will be populated dynamically -->
+        </div>
+
+        <!-- No Results Message -->
+        <div id="noResults" class="hidden text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33"></path>
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No recipes found</h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Try adjusting your search or filter criteria.</p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Authors -->
+                <div class="lg:col-span-2">
+                    <h3 class="text-lg font-semibold mb-4">Authors</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+                                MA
+                            </div>
+                            <div>
+                                <p class="font-medium">Muhammad Awais</p>
+                                <a href="https://www.linkedin.com/in/muhammadawaisshaikh/" target="_blank" rel="noopener noreferrer" 
+                                   class="text-blue-600 dark:text-blue-400 hover:underline text-sm">LinkedIn Profile</a>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-r from-green-600 to-teal-600 rounded-full flex items-center justify-center text-white font-semibold">
+                                RM
+                            </div>
+                            <div>
+                                <p class="font-medium">Robina Mirbahar</p>
+                                <a href="https://www.linkedin.com/in/robinamirbahar/" target="_blank" rel="noopener noreferrer" 
+                                   class="text-blue-600 dark:text-blue-400 hover:underline text-sm">LinkedIn Profile</a>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center text-white font-semibold">
+                                MZ
+                            </div>
+                            <div>
+                                <p class="font-medium">Dr. Mohammed Ziyad</p>
+                                <a href="https://www.linkedin.com/in/mziyad1/" target="_blank" rel="noopener noreferrer" 
+                                   class="text-blue-600 dark:text-blue-400 hover:underline text-sm">LinkedIn Profile</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Publication Info -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Publication</h3>
+                    <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                        <p><span class="font-medium">First published:</span> September 2025</p>
+                        <p><span class="font-medium">Repository:</span> <a href="https://github.com/muhammadawaisshaikh/ai-engineering" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline">GitHub</a></p>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <div class="space-y-2 text-sm">
+                        <a href="#searchInput" class="block text-blue-600 dark:text-blue-400 hover:underline">Search Recipes</a>
+                        <a href="#tagFilters" class="block text-blue-600 dark:text-blue-400 hover:underline">Browse by Tags</a>
+                        <a href="https://github.com/muhammadawaisshaikh/ai-engineering" target="_blank" rel="noopener noreferrer" class="block text-blue-600 dark:text-blue-400 hover:underline">View on GitHub</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 text-center text-sm text-gray-500 dark:text-gray-400">
+                <p>&copy; 2025 AI Engineering Recipes. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Recipe data
+        const RECIPES = [
+            {
+                id: 'ai-lab-python',
+                title: 'AI Lab with Python',
+                description: 'Comprehensive Python-based AI laboratory with notebooks, experiments, and utilities for hands-on learning.',
+                tags: ['Python', 'AI Lab', 'Experiments', 'Notebooks', 'Utilities'],
+                category: 'Core AI',
+                path: 'ai-lab-python',
+                icon: '🔬'
+            },
+            {
+                id: 'understanding-ml',
+                title: 'Understanding Machine Learning',
+                description: 'Core ML concepts including supervised/unsupervised learning, overfitting, underfitting, and practical applications.',
+                tags: ['Machine Learning', 'Supervised Learning', 'Unsupervised Learning', 'Overfitting', 'Underfitting'],
+                category: 'Machine Learning',
+                path: 'understanding-ml',
+                icon: '🧠'
+            },
+            {
+                id: 'working-with-data',
+                title: 'Working with Data',
+                description: 'Data collection, preprocessing, EDA, feature engineering, scaling, and handling imbalanced datasets.',
+                tags: ['Data Processing', 'EDA', 'Feature Engineering', 'Data Scaling', 'Imbalanced Data'],
+                category: 'Data Science',
+                path: 'working-with-data',
+                icon: '📊'
+            },
+            {
+                id: 'foundations-ai-ml',
+                title: 'Foundations of AI & ML',
+                description: 'Symbolic AI, rule-based systems, expert systems, reasoning, planning, and predictive modeling.',
+                tags: ['Symbolic AI', 'Rule-Based Systems', 'Expert Systems', 'Reasoning', 'Planning'],
+                category: 'AI Foundations',
+                path: 'foundations-ai-ml',
+                icon: '🏗️'
+            },
+            {
+                id: 'decision-trees-random-forests',
+                title: 'Decision Trees & Random Forests',
+                description: 'Implementation and analysis of decision trees and ensemble methods using random forests.',
+                tags: ['Decision Trees', 'Random Forests', 'Ensemble Methods', 'Classification'],
+                category: 'Machine Learning',
+                path: 'decision-trees-random-forests',
+                icon: '🌳'
+            },
+            {
+                id: 'linear-logistic-regression',
+                title: 'Linear & Logistic Regression',
+                description: 'Linear and logistic regression models with data loading utilities and practical implementations.',
+                tags: ['Linear Regression', 'Logistic Regression', 'Regression', 'Classification'],
+                category: 'Machine Learning',
+                path: 'linear-logistic-regression',
+                icon: '📈'
+            },
+            {
+                id: 'knn-svm-naive-bayes',
+                title: 'KNN, SVM & Naive Bayes',
+                description: 'K-Nearest Neighbors, Support Vector Machines, and Naive Bayes algorithms with visualization.',
+                tags: ['KNN', 'SVM', 'Naive Bayes', 'Classification', 'Visualization'],
+                category: 'Machine Learning',
+                path: 'knn-svm-naive-bayes',
+                icon: '🎯'
+            },
+            {
+                id: 'credit-scoring-fraud-detection',
+                title: 'Credit Scoring & Fraud Detection',
+                description: 'Anomaly detection and fraud detection systems using machine learning techniques.',
+                tags: ['Anomaly Detection', 'Fraud Detection', 'Credit Scoring', 'Security'],
+                category: 'Applications',
+                path: 'understanding-ml/credit-scoring-fraud-detection',
+                icon: '🔒'
+            },
+            {
+                id: 'ecommerce-recommendation',
+                title: 'E-commerce Recommendation System',
+                description: 'Building recommendation systems for e-commerce platforms using similarity metrics and collaborative filtering.',
+                tags: ['Recommendation Systems', 'Collaborative Filtering', 'E-commerce', 'Similarity Metrics'],
+                category: 'Applications',
+                path: 'understanding-ml/ecommerce-recommendation',
+                icon: '🛒'
+            },
+            {
+                id: 'healthcare-disease-diagnosis',
+                title: 'Healthcare Disease Diagnosis',
+                description: 'Machine learning models for disease diagnosis and healthcare applications.',
+                tags: ['Healthcare', 'Disease Diagnosis', 'Medical AI', 'Classification'],
+                category: 'Applications',
+                path: 'understanding-ml/healthcare-disease-diagnosis',
+                icon: '🏥'
+            },
+            {
+                id: 'spam-detection',
+                title: 'Spam Detection with ML',
+                description: 'Spam detection system using machine learning features, labels, and text processing.',
+                tags: ['Spam Detection', 'Text Processing', 'NLP', 'Classification'],
+                category: 'Applications',
+                path: 'understanding-ml/spam-detection-ml-features-labels',
+                icon: '📧'
+            },
+            {
+                id: 'data-collection-preprocessing',
+                title: 'Data Collection & Preprocessing',
+                description: 'Tools and techniques for collecting, cleaning, and preprocessing data for machine learning.',
+                tags: ['Data Collection', 'Data Cleaning', 'Preprocessing', 'Data Pipeline'],
+                category: 'Data Science',
+                path: 'working-with-data/data-collection-preprocessing',
+                icon: '🔧'
+            },
+            {
+                id: 'exploratory-data-analysis',
+                title: 'Exploratory Data Analysis',
+                description: 'Comprehensive EDA tools for correlation analysis, distributions, missing values, and data summaries.',
+                tags: ['EDA', 'Data Analysis', 'Correlation', 'Distributions', 'Missing Values'],
+                category: 'Data Science',
+                path: 'working-with-data/exploratory-data-analysis',
+                icon: '🔍'
+            },
+            {
+                id: 'feature-engineering-scaling',
+                title: 'Feature Engineering & Scaling',
+                description: 'Advanced feature engineering techniques and data scaling methods for optimal model performance.',
+                tags: ['Feature Engineering', 'Data Scaling', 'Feature Selection', 'Normalization'],
+                category: 'Data Science',
+                path: 'working-with-data/feature-engineering-scaling',
+                icon: '⚙️'
+            },
+            {
+                id: 'handling-imbalanced-data',
+                title: 'Handling Imbalanced Data',
+                description: 'Techniques for dealing with imbalanced datasets including SMOTE, resampling, and weighted models.',
+                tags: ['Imbalanced Data', 'SMOTE', 'Resampling', 'Data Augmentation'],
+                category: 'Data Science',
+                path: 'working-with-data/handling-imbalanced-data',
+                icon: '⚖️'
+            },
+            {
+                id: 'overfitting-underfitting',
+                title: 'Overfitting & Underfitting',
+                description: 'Understanding and addressing overfitting and underfitting in machine learning models.',
+                tags: ['Overfitting', 'Underfitting', 'Model Validation', 'Regularization'],
+                category: 'Machine Learning',
+                path: 'understanding-ml/machine-learning-key-concepts/overfitting-underfitting',
+                icon: '🎭'
+            },
+            {
+                id: 'supervised-learning',
+                title: 'Supervised Learning',
+                description: 'Comprehensive guide to supervised learning algorithms and techniques.',
+                tags: ['Supervised Learning', 'Classification', 'Regression', 'Training Data'],
+                category: 'Machine Learning',
+                path: 'understanding-ml/machine-learning-key-concepts',
+                icon: '🎯'
+            },
+            {
+                id: 'unsupervised-learning',
+                title: 'Unsupervised Learning',
+                description: 'Exploration of unsupervised learning methods including clustering and dimensionality reduction.',
+                tags: ['Unsupervised Learning', 'Clustering', 'Dimensionality Reduction', 'Pattern Discovery'],
+                category: 'Machine Learning',
+                path: 'understanding-ml/machine-learning-key-concepts',
+                icon: '🔍'
+            },
+            {
+                id: 'reinforcement-learning',
+                title: 'Reinforcement Learning',
+                description: 'Introduction to reinforcement learning concepts and algorithms.',
+                tags: ['Reinforcement Learning', 'RL', 'Q-Learning', 'Policy Gradient'],
+                category: 'Machine Learning',
+                path: 'understanding-ml/machine-learning-key-concepts',
+                icon: '🎮'
+            },
+            {
+                id: 'symbolic-ai-rule-based',
+                title: 'Symbolic AI & Rule-Based Systems',
+                description: 'Implementation of symbolic AI and rule-based systems for decision making.',
+                tags: ['Symbolic AI', 'Rule-Based Systems', 'Decision Making', 'Logic'],
+                category: 'AI Foundations',
+                path: 'foundations-ai-ml',
+                icon: '🧩'
+            },
+            {
+                id: 'expert-systems',
+                title: 'Expert Systems',
+                description: 'Simulated expert systems and knowledge-based AI applications.',
+                tags: ['Expert Systems', 'Knowledge-Based AI', 'Decision Support', 'Inference'],
+                category: 'AI Foundations',
+                path: 'foundations-ai-ml',
+                icon: '👨‍💼'
+            },
+            {
+                id: 'reasoning-planning',
+                title: 'Reasoning & Planning',
+                description: 'AI reasoning and planning algorithms for complex problem solving.',
+                tags: ['Reasoning', 'Planning', 'Problem Solving', 'Algorithmic Thinking'],
+                category: 'AI Foundations',
+                path: 'foundations-ai-ml',
+                icon: '🧮'
+            },
+            {
+                id: 'house-price-prediction',
+                title: 'House Price Prediction',
+                description: 'Predictive modeling for real estate using machine learning techniques.',
+                tags: ['Predictive Modeling', 'Real Estate', 'Regression', 'Data Analysis'],
+                category: 'Applications',
+                path: 'foundations-ai-ml',
+                icon: '🏠'
+            },
+            {
+                id: 'weather-alert-system',
+                title: 'Weather Alert System',
+                description: 'Rule-based weather monitoring and alert system using AI.',
+                tags: ['Weather Monitoring', 'Alert System', 'Rule-Based', 'IoT'],
+                category: 'Applications',
+                path: 'foundations-ai-ml',
+                icon: '🌤️'
+            },
+            {
+                id: 'evaluation-metrics',
+                title: 'Evaluation Metrics',
+                description: 'Comprehensive evaluation metrics including accuracy, precision, recall, and F1-score.',
+                tags: ['Evaluation Metrics', 'Accuracy', 'Precision', 'Recall', 'F1-Score'],
+                category: 'Machine Learning',
+                path: 'knn-svm-naive-bayes/evaluation-metrics-accuracy, precision, recall',
+                icon: '📊'
+            },
+            {
+                id: 'decision-boundaries',
+                title: 'Decision Boundaries Visualization',
+                description: 'Interactive visualization of decision boundaries for KNN, SVM, and Naive Bayes models.',
+                tags: ['Decision Boundaries', 'Visualization', 'Model Analysis', 'Interactive'],
+                category: 'Machine Learning',
+                path: 'knn-svm-naive-bayes/visualize',
+                icon: '🎨'
+            }
+        ];
+
+        // Dark mode functionality
+        function initDarkMode() {
+            const isDark = localStorage.getItem('darkMode') === 'true';
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+                document.getElementById('sunIcon').classList.remove('hidden');
+                document.getElementById('moonIcon').classList.add('hidden');
+            }
+        }
+
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('darkMode', isDark);
+            
+            if (isDark) {
+                document.getElementById('sunIcon').classList.remove('hidden');
+                document.getElementById('moonIcon').classList.add('hidden');
+            } else {
+                document.getElementById('sunIcon').classList.add('hidden');
+                document.getElementById('moonIcon').classList.remove('hidden');
+            }
+        }
+
+        // Search and filter functionality
+        let activeTags = new Set();
+        let filteredRecipes = [...RECIPES];
+
+        function filterRecipes() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            filteredRecipes = RECIPES.filter(recipe => {
+                const matchesSearch = recipe.title.toLowerCase().includes(searchTerm) ||
+                                    recipe.description.toLowerCase().includes(searchTerm) ||
+                                    recipe.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+                
+                const matchesTags = activeTags.size === 0 || 
+                                  recipe.tags.some(tag => activeTags.has(tag));
+                
+                return matchesSearch && matchesTags;
+            });
+            
+            renderRecipes();
+        }
+
+        function toggleTag(tag) {
+            if (activeTags.has(tag)) {
+                activeTags.delete(tag);
+            } else {
+                activeTags.add(tag);
+            }
+            filterRecipes();
+            renderTagFilters();
+        }
+
+        function renderTagFilters() {
+            const tagFiltersContainer = document.getElementById('tagFilters');
+            const allTags = [...new Set(RECIPES.flatMap(recipe => recipe.tags))].sort();
+            
+            tagFiltersContainer.innerHTML = allTags.map(tag => `
+                <button onclick="toggleTag('${tag}')" 
+                        class="tag-chip px-3 py-1 rounded-full text-sm font-medium transition-all duration-200 ${
+                            activeTags.has(tag) 
+                                ? 'active' 
+                                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                        }">
+                    ${tag}
+                </button>
+            `).join('');
+        }
+
+        function renderRecipes() {
+            const recipeGrid = document.getElementById('recipeGrid');
+            const noResults = document.getElementById('noResults');
+            
+            if (filteredRecipes.length === 0) {
+                recipeGrid.classList.add('hidden');
+                noResults.classList.remove('hidden');
+                return;
+            }
+            
+            recipeGrid.classList.remove('hidden');
+            noResults.classList.add('hidden');
+            
+            recipeGrid.innerHTML = filteredRecipes.map(recipe => `
+                <div class="card-hover bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden animate-fade-in">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="text-3xl">${recipe.icon}</div>
+                            <span class="px-2 py-1 text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full">
+                                ${recipe.category}
+                            </span>
+                        </div>
+                        
+                        <h3 class="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">
+                            ${recipe.title}
+                        </h3>
+                        
+                        <p class="text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
+                            ${recipe.description}
+                        </p>
+                        
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            ${recipe.tags.map(tag => `
+                                <span class="px-2 py-1 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full">
+                                    ${tag}
+                                </span>
+                            `).join('')}
+                        </div>
+                        
+                        <a href="https://github.com/muhammadawaisshaikh/ai-engineering/tree/main/${recipe.path}" 
+                           target="_blank" rel="noopener noreferrer"
+                           class="inline-flex items-center justify-center w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                            View Recipe
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Event listeners
+        document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+        document.getElementById('searchInput').addEventListener('input', filterRecipes);
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initDarkMode();
+            renderTagFilters();
+            renderRecipes();
+        });
+    </script>
+</body>
+</html>
