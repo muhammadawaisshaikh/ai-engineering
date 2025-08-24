@@ -1,26 +1,23 @@
-from surprise import Dataset, Reader, SVD
-from surprise.model_selection import train_test_split
-from surprise import accuracy
+from data_utils import create_sample_data, create_rating_matrix
+from similarity import calculate_user_similarity
+from display import display_header, display_data, display_all_recommendations
 
-# Load built-in dataset (MovieLens 100k)
-data = Dataset.load_builtin('ml-100k')
+def main():
+    """Main function that orchestrates the recommendation system"""
+    
+    # Display header
+    display_header()
+    
+    # Create and display data
+    data = create_sample_data()
+    display_data(data)
+    
+    # Create rating matrix and calculate similarities
+    rating_matrix = create_rating_matrix(data)
+    user_similarity_df = calculate_user_similarity(rating_matrix)
+    
+    # Display recommendations for all users
+    display_all_recommendations(data, rating_matrix, user_similarity_df)
 
-# Split into training and testing sets
-trainset, testset = train_test_split(data, test_size=0.25)
-
-# Initialize SVD algorithm
-model = SVD()
-
-# Train the model
-model.fit(trainset)
-
-# Make predictions
-predictions = model.test(testset)
-
-# Evaluate model accuracy
-rmse = accuracy.rmse(predictions)
-print(f"RMSE (Root Mean Squared Error): {rmse:.4f}")
-
-# Show a sample prediction
-sample_pred = predictions[0]
-print(f"\nSample prediction:\nUser {sample_pred.uid} likely rated item {sample_pred.iid} as {sample_pred.est:.2f}")
+if __name__ == "__main__":
+    main()
