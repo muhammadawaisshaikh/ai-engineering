@@ -41,9 +41,6 @@ Generative models learn the underlying data distribution from large datasets usi
 generative-ai/
 │── text-generation/      # Examples of text generation using transformer models
 │── image-generation/     # Image synthesis using diffusion models, GANs, and VAEs
-│── audio-generation/     # Text-to-speech and audio/music generation examples
-│── code-generation/      # AI-assisted code completion and generation
-│── multimodal/           # Cross-modal generation (text-to-image, text-to-video, etc.)
 │── utils/                # Helper functions for model loading and prompt engineering
 │── README.md             # Project documentation
 ````
