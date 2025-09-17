@@ -154,30 +154,16 @@ These architectures power:
 
 Contributions are welcome! 🎉
 
-If you’d like to contribute:
+We welcome contributions! Whether it's:
 
-1. Fork the repository
-2. Create a new branch for your feature or bugfix
-
-   ```bash
-   git checkout -b feature-name
-   ```
-3. Commit your changes and push the branch
-
-   ```bash
-   git commit -m "Add new feature"
-   git push origin feature-name
-   ```
-4. Open a Pull Request describing your changes
-
-Please make sure your contributions follow:
-
-* Clear coding practices
-* Well-documented functions and examples
-* Relevant references to research papers (if applicable)
+* Improving existing implementations
+* Adding new algorithms
+* Enhancing documentation
+* Creating new visualizations
+* Adding new real-world applications
+* Please feel free to open issues or submit pull requests.
 
 ---
 
-```
 
 
